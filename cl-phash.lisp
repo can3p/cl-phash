@@ -96,6 +96,44 @@
           clone
           ))))
 
+(defun m-del (m key)
+  (m-del-level m key (bit-hash key) 0))
+
+(defun m-del-level (node key bits level)
+  (let* ((idx (level-index bits level))
+         (sub-node (aref (cadr node) idx))
+         )
+    (if sub-node
+        (cond
+          ((array-node-p sub-node)
+           (let ((clone (clone-array-node node)))
+             (setf (aref (cadr clone) idx) (m-del-level sub-node key bits (+ level 5)))
+             clone
+             ))
+
+          ((value-node-p sub-node)
+           (if (equal (cadr sub-node) key)
+               (let ((clone (clone-array-node node)))
+                   (setf (aref (cadr clone) idx) nil)
+                   clone)
+                 node))
+          (t "cannot happen")
+          )
+        node)))
+
+(defun m-keys (m)
+  (apply #'concatenate 'list
+         (map 'list #'(lambda (node)
+                          (cond
+                            ((eq node nil) nil)
+                            ((value-node-p node) (list (cadr node)))
+                            (t (m-keys node))
+                            ))
+              (cadr m))))
+
+(defun m-count (m)
+  (length (m-keys m)))
+
 #|
 (defun hash (val) val)
 
