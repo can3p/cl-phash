@@ -1,5 +1,3 @@
-;;;; cl-journal.lisp
-
 (in-package #:cl-phash)
 
 (defun fixnum-as-bit-vector (n &key size (offset 0) write-into)
@@ -133,55 +131,3 @@
 
 (defun m-count (m)
   (length (m-keys m)))
-
-#|
-(defun hash (val) val)
-
-(defun mask (val level)
-  (int<-
-   (bit-and (>> (bits<- val) level)
-            (bits<- "1f"))))
-
-(defun align-to-length (val length)
-  (let* ((l (length val))
-         (to-add (- length l))
-         (addon (bit-not (bit- (<< 1 to-add) 1))))
-    (concatenate 'bit-vector addon val)))
-
-(defun bitpos (val level)
-  (align-to-length (<< 1 (mask val level))
-                   32
-                   ))
-
-(defun empty-bitmap () (make-array 32 :element-type 'bit))
-
-(defun index (bitmask bit)
-  (reduce '+
-          (bit-and bitmask
-                   (align-to-length (bit- bit 1) 32))))
-
-(defun indexed-node ()
-  (list :indexed (empty-bitmap) (make-array 32 :fill-pointer 0)))
-
-(defun indexed-node-val (bitmask arr)
-  (list :indexed bitmask arr))
-
-(defun map-> (m key)
-  (map-hash-> m (hash key) 0))
-
-(defun map<- (m key value)
-  (map-hash<- m key (hash key) value 0))
-
-(defun map-hash<- (node key h-key value level)
-  (let ((bit (bitpos h-key level))
-        (bitmask (cadr node)))
-    (if (> (bits->int (bit-and bit bitmask)) 0)
-        "overwrite existing value"
-        (let ((idx (* 2 (index bitmask bit)))
-              (new-bitmask (bit-ior bitmask bit))
-              (new-vector (copy-seq (caddr node))))
-          (setf (elt new-vector idx) key)
-          (setf (elt new-vector (1+ idx)) value)
-          (indexed-node-val new-bitmask new-vector)))))
-
-|#

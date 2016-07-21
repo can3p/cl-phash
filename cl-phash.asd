@@ -5,8 +5,9 @@
   :author "Dmitry Petrov <dpetroff@gmail.com>"
   :license "Public Domain"
   :serial t
-  :depends-on (#:bit-smasher)
+  :depends-on (#:split-sequence #:bit-smasher)
   :components ((:file "package")
                (:file "cl-phash")
+               (:file "benchmark")
                ))
 
